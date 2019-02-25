@@ -1,0 +1,56 @@
+apply plugin: 'com.android.application'
+
+//key为　gradle.properties里定义的变量
+//编译的sdk版本
+def ANDROID_BUILD_SDK_VERSION = project.getProperties().get("ANDROID_BUILD_SDK_VERSION")
+//app min sdk version
+def ANDROID_BUILD_MIN_SDK_VERSION = project.getProperties().get("ANDROID_BUILD_MIN_SDK_VERSION")
+//app target sdk version
+def ANDROID_BUILD_TARGET_SDK_VERSION = project.getProperties().get("ANDROID_BUILD_TARGET_SDK_VERSION")
+//app version code
+def ANDROID_BUILD_VER_CODE = project.getProperties().get("ANDROID_BUILD_VER_CODE")
+//app version name
+def ANDROID_BUILD_VER_NAME = project.getProperties().get("ANDROID_BUILD_VER_NAME")
+//编译的tools版本
+def ANDROID_BUILD_TOOLS_VERSION = project.getProperties().get("ANDROID_BUILD_TOOLS_VERSION")
+//app的包名
+def ANDROID_APPLICATION_ID = project.getProperties().get("APPLICATION_ID")
+def JAVA_VERSION = project.getProperties().get("JAVA_VERSION")
+
+
+android {
+    compileSdkVersion Integer.parseInt("$rootProject.ext.compileSdkVersion" as String)
+
+
+    defaultConfig {
+        applicationId ANDROID_APPLICATION_ID
+        minSdkVersion Integer.parseInt(ANDROID_BUILD_MIN_SDK_VERSION as String)
+        targetSdkVersion Integer.parseInt(ANDROID_BUILD_TARGET_SDK_VERSION as String)
+        versionCode Integer.parseInt(ANDROID_BUILD_VER_CODE as String)
+        versionName ANDROID_BUILD_VER_NAME
+        multiDexEnabled true
+
+    }
+
+    compileOptions {
+        sourceCompatibility JAVA_VERSION
+        targetCompatibility JAVA_VERSION
+    }
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "com.android.support:appcompat-v7:$rootProject.ext.supportLibraryVersion"
+    implementation("com.squareup.picasso:picasso:$rootProject.ext.picasso_version") {//这样写的作用是从 picasso 的依赖中去除 "com.android.support"
+        exclude group: "com.android.support"
+    }
+    implementation("com.github.bumptech.glide:glide:$rootProject.ext.glide_version") {
+        exclude group: "com.android.support"
+    }
+
+    //之所以去除依赖，是因为picasso 和 glide 对于com.android.support依赖的版本不一致，不加这句同时引入picasso 和 glide会报错
+    //这里面的implementation和低版本的gradle中的compile用法一样
+
+
+}
